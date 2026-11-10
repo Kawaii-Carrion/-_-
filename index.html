@@ -1,0 +1,1189 @@
+<!doctype html>
+<!-- doctype html — объявление типа документа (это HTML5) -->
+<html lang="ru" class="scroll-smooth">
+<!-- lang="ru" — язык страницы; scroll-smooth — плавная прокрутка по якорным ссылкам -->
+<head>
+    <!-- head — служебная часть: метаданные, стили, шрифты -->
+    <meta charset="utf-8">
+    <!-- charset — кодировка (UTF-8 поддерживает русский) -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- viewport — корректное отображение на мобильных (адаптивность) -->
+    <title>BUMPERFORCE — Серый макет (wireframe) + админка</title>
+
+    <!-- Подключаем Tailwind CSS — фреймворк, где стили пишутся классами прямо в разметке -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Настройка Tailwind: свои шрифты -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Manrope', 'system-ui', 'sans-serif'],       // sans — основной шрифт
+                        mono: ['JetBrains Mono', 'ui-monospace', 'monospace'], // mono — моноширинный (технические подписи)
+                        stencil: ['Montserrat', 'sans-serif'],               // stencil — жирный шрифт заголовков
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Загрузка шрифтов с Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <!-- preconnect — заранее соединиться с сервером шрифтов (ускорение) -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- crossorigin — разрешение запросов с другого домена -->
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Montserrat:wght@700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- display=swap — показывать текст сразу, подгружая шрифт фоном -->
+
+    <style>
+        /* ===== БАЗОВЫЕ СТИЛИ СТРАНИЦЫ (wireframe: серо-белый) ===== */
+        body {
+            font-family: 'Manrope', sans-serif; /* основной шрифт */
+            line-height: 1.6;                   /* line-height — межстрочный интервал */
+            background: #f5f5f5;                /* светло-серый фон всей страницы */
+            color: #333333;                     /* тёмно-серый основной текст */
+        }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }   /* класс моноширинного шрифта */
+        .font-stencil {                                           /* класс жирных заголовков */
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;          /* font-weight 900 — максимальная жирность */
+            letter-spacing: -0.01em;   /* letter-spacing — межбуквенный интервал */
+            line-height: 1.1;
+        }
+
+        /* ===== СЕРЫЕ ЗАГЛУШКИ ВМЕСТО ФОТО ===== */
+        .placeholder {
+            background: #d4d4d4;      /* средне-серый фон заглушки */
+            display: flex;            /* flex — выравнивание содержимого */
+            flex-direction: column;   /* column — элементы в столбик */
+            align-items: center;      /* по центру по горизонтали */
+            justify-content: center;  /* по центру по вертикали */
+            color: #737373;           /* цвет подписи внутри */
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+        }
+
+        /* ===== КАРТОЧКИ И СЕКЦИИ ===== */
+        .wf-card { background: #ffffff; border: 1px solid #d4d4d4; }        /* белая карточка с серой рамкой */
+        .wf-section { background: #ffffff; border-bottom: 1px solid #e5e5e5; }      /* белая секция с нижней границей */
+        .wf-section-alt { background: #fafafa; border-bottom: 1px solid #e5e5e5; }  /* чуть серая секция (чередование) */
+
+        /* ===== КНОПКИ ===== */
+        .wf-btn-primary { background: #404040; color: #ffffff; }   /* главная кнопка — тёмно-серая */
+        .wf-btn-primary:hover { background: #262626; }             /* hover — при наведении темнее */
+        .wf-btn-secondary { background: #ffffff; color: #404040; border: 1px solid #a3a3a3; } /* вторичная — контурная */
+        .wf-btn-secondary:hover { background: #f5f5f5; }
+
+        /* ===== ПАНЕЛЬ СПЕЦ. ВОЗМОЖНОСТЕЙ (A+ A- A 🌓) ===== */
+        .accessibility-panel {
+            position: fixed;      /* fixed — закреплена, не двигается при прокрутке */
+            bottom: 20px; right: 20px;   /* отступы снизу и справа */
+            z-index: 9999;        /* z-index — слой поверх всего */
+            background: #ffffff; border: 1px solid #a3a3a3;
+            padding: 14px; border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1); /* box-shadow — лёгкая тень */
+        }
+        .accessibility-title {
+            font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 11px;
+            color: #525252; text-transform: uppercase; /* все буквы заглавные */
+            letter-spacing: 0.1em; margin-bottom: 10px; text-align: center;
+            border-bottom: 1px solid #e5e5e5; padding-bottom: 8px;
+        }
+        .accessibility-btn {
+            background: #f5f5f5; color: #404040; border: 1px solid #a3a3a3;
+            padding: 8px 0; margin: 3px; border-radius: 6px;
+            font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 15px;
+            cursor: pointer;  /* cursor: pointer — курсор-рука */
+            width: 44px; text-align: center;
+        }
+        .accessibility-btn:hover, .accessibility-btn.active { background: #404040; color: #ffffff; }
+        .accessibility-indicator {
+            font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #737373;
+            text-align: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid #e5e5e5;
+        }
+        /* Режим высокой контрастности для слабовидящих */
+        body.high-contrast { background: #000000 !important; color: #ffffff !important; } /* !important — приоритет стиля */
+        body.high-contrast .wf-card, body.high-contrast .wf-section, body.high-contrast .wf-section-alt { background: #000000 !important; border-color: #ffffff !important; }
+        body.high-contrast * { color: #ffffff !important; }
+        body.high-contrast a, body.high-contrast button { color: #ffff00 !important; } /* жёлтые ссылки */
+
+        /* ===== КВИЗ (шаги) ===== */
+        .quiz-step { display: none; }          /* display: none — шаг скрыт по умолчанию */
+        .quiz-step.active { display: block; }  /* .active — видимый шаг */
+        .quiz-option { background: #ffffff; border: 1px solid #d4d4d4; cursor: pointer; text-align: left; }
+        .quiz-option:hover { border-color: #404040; background: #f5f5f5; }
+        .quiz-option.selected { border-color: #404040; background: #e5e5e5; } /* выбранный вариант */
+
+        /* ===== АДМИНКА (серо-белая, простая) ===== */
+        #admin-panel { font-family: 'Manrope', system-ui, sans-serif; background: #f3f4f6; color: #111827; }
+        .adm-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .adm-input { width: 100%; border: 1px solid #d1d5db; padding: 8px 12px; border-radius: 6px; font-size: 14px; outline: none; margin-top: 4px; background: #fff; color: #111827; }
+        .adm-input:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.2); } /* focus — состояние «поле активно» */
+        .adm-btn { background: #2563eb; color: #fff; padding: 8px 16px; border-radius: 6px; font-weight: 600; font-size: 14px; cursor: pointer; border: none; }
+        .adm-btn:hover { background: #1d4ed8; }
+        .adm-btn-gray { background: #e5e7eb; color: #374151; }
+        .adm-btn-gray:hover { background: #d1d5db; }
+        .adm-btn-red { background: #ef4444; color: #fff; }
+        .adm-btn-red:hover { background: #dc2626; }
+        .adm-btn-green { background: #16a34a; color: #fff; }
+        .adm-tab { padding: 12px 20px; cursor: pointer; border-bottom: 2px solid transparent; font-weight: 600; color: #6b7280; font-size: 14px; white-space: nowrap; }
+        .adm-tab.active { border-bottom-color: #2563eb; color: #2563eb; }
+        .adm-label { display: block; font-size: 11px; color: #6b7280; margin-bottom: 2px; }
+
+        /* Скрыть полосу прокрутки у горизонтальных списков */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+
+<!-- body — тело страницы -->
+<body class="antialiased">
+<!-- antialiased — сглаживание шрифтов -->
+
+    <!-- ==================== ПАНЕЛЬ СПЕЦ. ВОЗМОЖНОСТЕЙ ==================== -->
+    <!-- role="region" и aria-label — подписи для экранных читалок (доступность) -->
+    <div class="accessibility-panel" role="region" aria-label="Панель специальных возможностей">
+        <div class="accessibility-title">🔧 Спец. возможности</div>
+        <div style="display: flex; justify-content: center;">
+            <button class="accessibility-btn" onclick="changeFontSize(1)" aria-label="Увеличить текст">A+</button>
+            <button class="accessibility-btn" onclick="changeFontSize(-1)" aria-label="Уменьшить текст">A−</button>
+            <button class="accessibility-btn" onclick="resetFontSize()" aria-label="Сбросить размер текста">A</button>
+            <button class="accessibility-btn" onclick="toggleHighContrast()" aria-label="Высокая контрастность">🌓</button>
+        </div>
+        <div class="accessibility-indicator" id="font-size-indicator">Размер: 16px (100%)</div>
+    </div>
+
+    <!-- ==================== ШАПКА ==================== -->
+    <!-- header — тег шапки; sticky top-0 — прилипает к верху экрана; backdrop-blur — размытие фона под шапкой -->
+    <header class="sticky top-0 z-40 border-b border-[#d4d4d4] bg-white/95 backdrop-blur-md">
+        <!-- mx-auto — по центру; max-w-7xl — макс. ширина; flex justify-between — элементы по краям -->
+        <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+            <!-- Логотип -->
+            <a href="#top" class="flex items-center gap-3">
+                <div class="size-10 wf-card grid place-items-center font-stencil text-lg">BF</div>
+                <!-- size-10 — квадрат 40px; grid place-items-center — центрирование содержимого -->
+                <div class="hidden sm:block">
+                    <!-- hidden sm:block — скрыто на телефонах, видно с планшета -->
+                    <div class="font-stencil text-[#171717] tracking-tight text-base leading-none">BUMPER<span class="text-[#a3a3a3]">FORCE</span></div>
+                    <div class="font-mono text-[10px] text-[#a3a3a3] tracking-widest mt-0.5">TACTICAL OFF-ROAD PROTECTION</div>
+                </div>
+            </a>
+            <!-- Меню (видно только на больших экранах lg) -->
+            <nav class="hidden lg:flex items-center gap-8 font-mono text-xs uppercase tracking-widest text-[#737373]">
+                <a href="#problems" class="hover:text-[#171717]">Проблемы</a>
+                <a href="#products" class="hover:text-[#171717]">Арсенал</a>
+                <a href="#advantages" class="hover:text-[#171717]">Преимущества</a>
+                <a href="#guarantee" class="hover:text-[#171717]">Гарантии</a>
+                <a href="#reviews" class="hover:text-[#171717]">Отзывы</a>
+                <a href="#quiz" class="hover:text-[#171717] font-bold text-[#171717]">Рассчитать</a>
+            </nav>
+            <div class="flex items-center gap-3">
+                <!-- Телефон в шапке -->
+                <a href="tel:+78001234567" id="header-phone-link" class="hidden md:flex items-center gap-2 font-mono text-xs text-[#737373] hover:text-[#171717]">
+                    <!-- svg — векторная иконка трубки -->
+                    <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                    <span id="header-phone-text">8 800 123-45-67</span>
+                </a>
+                <!-- Кнопка CTA -->
+                <a href="#quiz" class="hidden sm:inline-flex wf-btn-primary px-5 py-2.5 font-stencil text-xs uppercase tracking-wider">В бой</a>
+                <!-- Бургер-меню для мобильных: details/summary — раскрывашка без JS -->
+                <details class="lg:hidden">
+                    <summary class="grid size-10 cursor-pointer list-none place-items-center text-[#737373] hover:bg-[#f5f5f5] [&::-webkit-details-marker]:hidden" aria-label="Меню">
+                        <!-- [&::-webkit-details-marker]:hidden — убрать стандартный треугольник маркера -->
+                        <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+                    </summary>
+                    <nav class="absolute inset-x-0 top-16 border-t border-[#d4d4d4] bg-white shadow-2xl lg:hidden">
+                        <!-- absolute inset-x-0 — растянуть на всю ширину; shadow-2xl — сильная тень -->
+                        <ul class="mx-auto max-w-7xl divide-y divide-[#e5e5e5] px-4 py-2">
+                            <!-- divide-y — линии-разделители между пунктами -->
+                            <li><a href="#problems" class="block py-4 font-mono text-sm uppercase tracking-wider text-[#525252]">Проблемы</a></li>
+                            <li><a href="#products" class="block py-4 font-mono text-sm uppercase tracking-wider text-[#525252]">Арсенал</a></li>
+                            <li><a href="#advantages" class="block py-4 font-mono text-sm uppercase tracking-wider text-[#525252]">Преимущества</a></li>
+                            <li><a href="#guarantee" class="block py-4 font-mono text-sm uppercase tracking-wider text-[#525252]">Гарантии</a></li>
+                            <li><a href="#reviews" class="block py-4 font-mono text-sm uppercase tracking-wider text-[#525252]">Отзывы</a></li>
+                            <li class="py-4"><a href="tel:+78001234567" class="block text-lg font-bold text-[#171717]">8 800 123-45-67</a></li>
+                        </ul>
+                    </nav>
+                </details>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==================== HERO (ПЕРВЫЙ ЭКРАН) ==================== -->
+    <section id="top" class="relative wf-section py-16 lg:py-24 overflow-hidden">
+        <!-- relative — для позиционирования внутри; overflow-hidden — обрезать выступающее -->
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="max-w-4xl">
+                <!-- Промо-баннер акции (управляется из админки) -->
+                <div id="promo-banner" class="inline-flex items-center gap-2 border border-[#a3a3a3] bg-[#f5f5f5] px-3 py-1.5 mb-8">
+                    <span class="size-2 bg-[#737373] animate-pulse"></span>
+                    <!-- animate-pulse — пульсирующая точка-индикатор -->
+                    <span id="promo-text" class="font-mono text-[10px] uppercase tracking-widest text-[#737373] font-bold">⚠ ДО 30 НОЯБРЯ · УСТАНОВКА В ПОДАРОК</span>
+                </div>
+                <!-- Главный заголовок: адаптивные размеры text-4xl/6xl/7xl -->
+                <h1 class="font-stencil text-4xl sm:text-6xl lg:text-7xl uppercase tracking-tight text-[#171717] leading-[0.95]">
+                    БРОНЯ ДЛЯ<br>КИТАЙСКИХ<br>ВНЕДОРОЖНИКОВ
+                </h1>
+                <p class="mt-6 max-w-2xl text-lg text-[#525252] leading-relaxed">
+                    Силовые дуги из стали <span class="text-[#171717] font-bold">AISI 304 толщиной 3 мм</span>.
+                    Установка <span class="text-[#171717] font-bold">без сверления кузова</span> в штатные крепления.
+                    Гарантия дилера сохранена.
+                </p>
+                <div class="mt-8 flex flex-wrap gap-4">
+                    <!-- flex-wrap — кнопки переносятся на новую строку, если не влезают -->
+                    <a href="#quiz" class="wf-btn-primary px-8 py-4 font-stencil text-sm uppercase tracking-wider flex items-center gap-2">Рассчитать за 2 минуты <span>→</span></a>
+                    <a href="#products" class="wf-btn-secondary px-8 py-4 font-stencil text-sm uppercase tracking-wider">Смотреть арсенал</a>
+                </div>
+                <!-- Мини-статистика: grid — сетка 2 колонки на телефоне, 4 на планшете+ -->
+                <div class="mt-12 grid grid-cols-2 sm:grid-cols-4 gap-6 border-t border-[#e5e5e5] pt-8 max-w-3xl">
+                    <div><div class="text-2xl sm:text-3xl font-stencil text-[#171717]">427</div><div class="font-mono text-[10px] uppercase tracking-wider text-[#a3a3a3] mt-1">Установок в 2025</div></div>
+                    <div><div class="text-2xl sm:text-3xl font-stencil text-[#171717]">5 ЛЕТ</div><div class="font-mono text-[10px] uppercase tracking-wider text-[#a3a3a3] mt-1">Гарантия от коррозии</div></div>
+                    <div><div class="text-2xl sm:text-3xl font-stencil text-[#171717]">AISI 304</div><div class="font-mono text-[10px] uppercase tracking-wider text-[#a3a3a3] mt-1">Пищевая сталь</div></div>
+                    <div><div class="text-2xl sm:text-3xl font-stencil text-[#171717]">3-7 ДН</div><div class="font-mono text-[10px] uppercase tracking-wider text-[#a3a3a3] mt-1">Доставка по РФ</div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== ПРОБЛЕМЫ ==================== -->
+    <section id="problems" class="wf-section-alt py-20">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="mb-12 max-w-3xl">
+                <div class="font-mono text-xs text-[#737373] mb-4">// ЗНАКОМАЯ СИТУАЦИЯ?</div>
+                <h2 class="font-stencil text-3xl sm:text-5xl uppercase text-[#171717] tracking-tight leading-[0.95]">3 ПРОБЛЕМЫ ВЛАДЕЛЬЦЕВ<br>КИТАЙСКИХ ВНЕДОРОЖНИКОВ</h2>
+            </div>
+            <div class="grid gap-6 md:grid-cols-3">
+                <!-- Карточка проблемы 1 -->
+                <div class="wf-card p-8">
+                    <div class="size-12 bg-[#f5f5f5] border border-[#d4d4d4] grid place-items-center mb-6">
+                        <!-- Иконка «восклицательный знак в круге» -->
+                        <svg class="size-6 text-[#737373]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    </div>
+                    <h3 class="font-stencil text-xl text-[#171717] uppercase mb-3">РЖАВЕЕТ ЧЕРЕЗ 2 СЕЗОНА</h3>
+                    <p class="text-sm text-[#525252] leading-relaxed">Дешёвая защита из чёрного металла начинает ржаветь после первой зимы. Через 2 года — сквозная коррозия и замена.</p>
+                </div>
+                <!-- Карточка проблемы 2 -->
+                <div class="wf-card p-8">
+                    <div class="size-12 bg-[#f5f5f5] border border-[#d4d4d4] grid place-items-center mb-6">
+                        <!-- Иконка «треугольник предупреждения» -->
+                        <svg class="size-6 text-[#737373]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    </div>
+                    <h3 class="font-stencil text-xl text-[#171717] uppercase mb-3">СЛЕТАЕТ ГАРАНТИЯ ДИЛЕРА</h3>
+                    <p class="text-sm text-[#525252] leading-relaxed">Установка со сверлением кузова = автоматическое снятие с гарантии. Дилер откажет в ремонте даже по заводскому браку.</p>
+                </div>
+                <!-- Карточка проблемы 3 -->
+                <div class="wf-card p-8">
+                    <div class="size-12 bg-[#f5f5f5] border border-[#d4d4d4] grid place-items-center mb-6">
+                        <!-- Иконка «крест в круге» -->
+                        <svg class="size-6 text-[#737373]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                    </div>
+                    <h3 class="font-stencil text-xl text-[#171717] uppercase mb-3">НЕТ СПЕЦ. РЕШЕНИЙ ПОД КИТАЙЦЕВ</h3>
+                    <p class="text-sm text-[#525252] leading-relaxed">Универсальные «колхозные» дуги не подходят. Приходится колхозить, резать, подгонять. Вид — как из 90-х.</p>
+                </div>
+            </div>
+            <!-- Блок «Наше решение»: border-l-4 — акцентная левая граница -->
+            <div class="mt-12 border-l-4 border-[#737373] bg-[#f5f5f5] p-8">
+                <div class="font-mono text-xs text-[#737373] mb-2">// НАШЕ РЕШЕНИЕ</div>
+                <p class="text-lg text-[#171717] leading-relaxed">Мы делаем <span class="font-stencil">специализированную защиту</span> именно под китайские внедорожники: JAC T9, Haval H3, Tank 300, GAC GS8. Из пищевой стали AISI 304. С установкой в штатные крепления — <span class="font-bold">дилерская гарантия сохраняется</span>.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== АРСЕНАЛ (КАТАЛОГ) ==================== -->
+    <section id="products" class="wf-section py-24">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap items-end justify-between mb-16 gap-6">
+                <div>
+                    <div class="font-mono text-xs text-[#737373] mb-4">// 02. АРСЕНАЛ</div>
+                    <h2 class="font-stencil text-4xl sm:text-5xl uppercase text-[#171717] tracking-tight">ГОТОВЫЕ КОМПЛЕКТЫ</h2>
+                </div>
+                <p class="max-w-md text-[#525252]">3 готовых комплекта под самые популярные модели. Другая машина? <a href="#contacts" class="text-[#171717] underline hover:no-underline">Сделаем под заказ →</a></p>
+            </div>
+            <!-- Контейнер: сюда JavaScript вставит карточки товаров -->
+            <div id="products-grid" class="grid gap-6 md:grid-cols-3"></div>
+        </div>
+    </section>
+
+    <!-- ==================== ПРЕИМУЩЕСТВА ==================== -->
+    <section id="advantages" class="wf-section-alt py-24">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="mb-16">
+                <div class="font-mono text-xs text-[#737373] mb-4">// 03. ПОЧЕМУ BUMPERFORCE</div>
+                <h2 class="font-stencil text-4xl sm:text-5xl uppercase text-[#171717] tracking-tight">6 ПРИЧИН РАБОТАТЬ С НАМИ</h2>
+            </div>
+            <!-- Контейнер преимуществ (заполняет JS) -->
+            <div id="advantages-grid" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"></div>
+        </div>
+    </section>
+
+    <!-- ==================== ПАРТНЁРЫ ==================== -->
+    <section class="wf-section py-16">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-10">
+                <div class="font-mono text-xs text-[#737373] mb-2">// РАБОТАЕМ С ПРОВЕРЕННЫМИ ПАРТНЁРАМИ</div>
+                <h3 class="font-stencil text-2xl text-[#171717] uppercase">Нам доверяют</h3>
+            </div>
+            <!-- Сетка логотипов-заглушек -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6 items-center">
+                <div class="wf-card h-20 flex items-center justify-center p-4"><span class="font-stencil text-xl text-[#a3a3a3]">СДЭК</span></div>
+                <div class="wf-card h-20 flex items-center justify-center p-4"><span class="font-stencil text-xl text-[#a3a3a3]">ПЭК</span></div>
+                <div class="wf-card h-20 flex items-center justify-center p-4"><span class="font-stencil text-sm text-[#a3a3a3] text-center">Деловые<br>Линии</span></div>
+                <div class="wf-card h-20 flex items-center justify-center p-4"><span class="font-stencil text-lg text-[#a3a3a3]">Тинькофф</span></div>
+                <div class="wf-card h-20 flex items-center justify-center p-4"><span class="font-stencil text-lg text-[#a3a3a3]">Сбер</span></div>
+                <div class="wf-card h-20 flex items-center justify-center p-4"><span class="font-stencil text-sm text-[#a3a3a3]">214-ФЗ</span></div>
+            </div>
+            <p class="text-center mt-8 text-sm text-[#a3a3a3]">Рассрочка 0-0-12 от Тинькофф и Сбер · Оплата по счёту для юр. лиц · Безопасная сделка</p>
+        </div>
+    </section>
+
+    <!-- ==================== ГАРАНТИИ ==================== -->
+    <section id="guarantee" class="wf-section-alt py-24">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="mb-16 max-w-3xl">
+                <div class="font-mono text-xs text-[#737373] mb-4">// 04. ГАРАНТИИ</div>
+                <h2 class="font-stencil text-4xl sm:text-5xl uppercase text-[#171717] tracking-tight leading-[0.95]">5 ЖЕЛЕЗОБЕТОННЫХ<br>ГАРАНТИЙ В ДОГОВОРЕ</h2>
+            </div>
+            <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-5">
+                <div class="wf-card p-6">
+                    <div class="size-14 bg-[#f5f5f5] border border-[#d4d4d4] grid place-items-center mb-4">
+                        <!-- Иконка «щит» -->
+                        <svg class="size-7 text-[#737373]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    </div>
+                    <h4 class="font-stencil text-[#171717] uppercase mb-2">5 лет от коррозии</h4>
+                    <p class="text-xs text-[#525252]">Если появится ржавчина — заменим комплект бесплатно. Даже через 4 года.</p>
+                </div>
+                <div class="wf-card p-6">
+                    <div class="size-14 bg-[#f5f5f5] border border-[#d4d4d4] grid place-items-center mb-4">
+                        <!-- Иконка «галка в круге» -->
+                        <svg class="size-7 text-[#737373]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    </div>
+                    <h4 class="font-stencil text-[#171717] uppercase mb-2">Гарантия дилера</h4>
+                    <p class="text-xs text-[#525252]">Прописано в договоре: установка не является основанием для снятия с гарантии авто.</p>
+                </div>
+                <div class="wf-card p-6">
+                    <div class="size-14 bg-[#f5f5f5] border border-[#d4d4d4] grid place-items-center mb-4">
+                        <!-- Иконка «глаз» -->
+                        <svg class="size-7 text-[#737373]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </div>
+                    <h4 class="font-stencil text-[#171717] uppercase mb-2">14 дней на возврат</h4>
+                    <p class="text-xs text-[#525252]">Не подошло — вернём деньги без вопросов. Без экспертиз и ожиданий.</p>
+                </div>
+                <div class="wf-card p-6">
+                    <div class="size-14 bg-[#f5f5f5] border border-[#d4d4d4] grid place-items-center mb-4">
+                        <!-- Иконка «грузовик» -->
+                        <svg class="size-7 text-[#737373]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                    </div>
+                    <h4 class="font-stencil text-[#171717] uppercase mb-2">Доставка без повреждений</h4>
+                    <p class="text-xs text-[#525252]">Царапина при доставке = наша замена за наш счёт. Страхуем каждый груз.</p>
+                </div>
+                <div class="wf-card p-6">
+                    <div class="size-14 bg-[#f5f5f5] border border-[#d4d4d4] grid place-items-center mb-4">
+                        <!-- Иконка «рубль» -->
+                        <svg class="size-7 text-[#737373]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    </div>
+                    <h4 class="font-stencil text-[#171717] uppercase mb-2">Фиксированная цена</h4>
+                    <p class="text-xs text-[#525252]">Никаких «а ещё нужно доплатить». Цена в договоре = финальная цена.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== ОТЗЫВЫ ==================== -->
+    <section id="reviews" class="wf-section py-24">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-wrap items-end justify-between mb-12 gap-6">
+                <div>
+                    <div class="font-mono text-xs text-[#737373] mb-4">// 05. РЕАЛЬНЫЕ ОТЗЫВЫ</div>
+                    <h2 class="font-stencil text-4xl sm:text-5xl uppercase text-[#171717] tracking-tight">427 ДОВОЛЬНЫХ КЛИЕНТОВ</h2>
+                </div>
+                <a href="#" class="font-mono text-xs text-[#737373] hover:text-[#171717]">Все отзывы на Яндекс.Картах →</a>
+            </div>
+            <!-- Контейнер отзывов (заполняет JS) -->
+            <div id="reviews-grid" class="grid gap-6 md:grid-cols-2 lg:grid-cols-3"></div>
+            <div class="mt-10 text-center">
+                <a href="#" class="inline-block wf-btn-secondary px-8 py-3 font-stencil text-xs uppercase tracking-wider">Читать 427 отзывов на Яндекс.Картах</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== КВИЗ ==================== -->
+    <section id="quiz" class="wf-section-alt py-24">
+        <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-10">
+                <div class="font-mono text-xs text-[#737373] mb-4">// ТАКТИЧЕСКИЙ РАСЧЁТ</div>
+                <h2 class="font-stencil text-4xl sm:text-5xl uppercase text-[#171717] tracking-tight leading-[0.95]">УЗНАЙТЕ ТОЧНУЮ ЦЕНУ<br>ЗА 2 МИНУТЫ</h2>
+                <p class="mt-4 text-[#525252]">Ответьте на 4 вопроса — мы пришлём расчёт и 3D-визуализацию вашего авто с защитой в WhatsApp</p>
+            </div>
+            <div class="wf-card p-8 sm:p-12">
+                <!-- Прогресс-бар шагов -->
+                <div class="flex items-center justify-between mb-6">
+                    <div class="font-mono text-xs text-[#a3a3a3]">ШАГ <span id="quiz-step">1</span> ИЗ 4</div>
+                    <div class="flex gap-1">
+                        <div class="w-12 h-1.5 bg-[#737373]" id="progress-1"></div>
+                        <div class="w-12 h-1.5 bg-[#e5e5e5]" id="progress-2"></div>
+                        <div class="w-12 h-1.5 bg-[#e5e5e5]" id="progress-3"></div>
+                        <div class="w-12 h-1.5 bg-[#e5e5e5]" id="progress-4"></div>
+                    </div>
+                </div>
+
+                <!-- ШАГ 1 -->
+                <div class="quiz-step active" id="step-1">
+                    <h3 class="font-stencil text-2xl text-[#171717] uppercase mb-6">КАКАЯ У ВАС МАШИНА?</h3>
+                    <div class="grid gap-3">
+                        <!-- data-step / data-value — данные для JS (читаются через dataset) -->
+                        <button class="quiz-option p-4 font-stencil text-[#171717] uppercase text-sm" data-step="1" data-value="JAC T9">JAC T9 (пикап)</button>
+                        <button class="quiz-option p-4 font-stencil text-[#171717] uppercase text-sm" data-step="1" data-value="Haval H3">Haval H3 (внедорожник)</button>
+                        <button class="quiz-option p-4 font-stencil text-[#171717] uppercase text-sm" data-step="1" data-value="Tank 300">Tank 300</button>
+                        <button class="quiz-option p-4 font-stencil text-[#171717] uppercase text-sm" data-step="1" data-value="Другая">Другая модель (укажу в WhatsApp)</button>
+                    </div>
+                </div>
+
+                <!-- ШАГ 2 -->
+                <div class="quiz-step" id="step-2">
+                    <h3 class="font-stencil text-2xl text-[#171717] uppercase mb-6">ЧТО ЗАЩИЩАЕМ?</h3>
+                    <div class="grid gap-3">
+                        <button class="quiz-option p-4 font-stencil text-[#171717] uppercase text-sm" data-step="2" data-value="Перед + зад">Передний + задний бампер (полный комплект)</button>
+                        <button class="quiz-option p-4 font-stencil text-[#171717] uppercase text-sm" data-step="2" data-value="Перед">Только передний бампер</button>
+                        <button class="quiz-option p-4 font-stencil text-[#171717] uppercase text-sm" data-step="2" data-value="Зад">Только задний бампер</button>
+                    </div>
+                </div>
+
+                <!-- ШАГ 3 -->
+                <div class="quiz-step" id="step-3">
+                    <h3 class="font-stencil text-2xl text-[#171717] uppercase mb-6">НУЖНА УСТАНОВКА?</h3>
+                    <div class="grid gap-3">
+                        <button class="quiz-option p-4 font-stencil text-[#171717] uppercase text-sm" data-step="3" data-value="Под ключ">Да, под ключ (установка в нашем сервисе)</button>
+                        <button class="quiz-option p-4 font-stencil text-[#171717] uppercase text-sm" data-step="3" data-value="Сам">Нет, сам установлю по видео-инструкции</button>
+                        <button class="quiz-option p-4 font-stencil text-[#171717] uppercase text-sm" data-step="3" data-value="Доставка">Доставка в мой регион + установка на месте</button>
+                    </div>
+                </div>
+
+                <!-- ШАГ 4: форма -->
+                <div class="quiz-step" id="step-4">
+                    <h3 class="font-stencil text-2xl text-[#171717] uppercase mb-6">КУДА ПРИСЛАТЬ РАСЧЁТ?</h3>
+                    <form id="quiz-form" class="space-y-4">
+                        <div>
+                            <label class="block font-mono text-[10px] uppercase tracking-wider text-[#737373] mb-2" for="quiz-name">Ваше имя</label>
+                            <input id="quiz-name" name="name" type="text" required placeholder="Как к вам обращаться?" class="w-full bg-white border border-[#d4d4d4] px-4 py-3 text-[#171717] placeholder:text-[#a3a3a3] focus:border-[#404040] focus:outline-none font-mono text-sm">
+                        </div>
+                        <div>
+                            <label class="block font-mono text-[10px] uppercase tracking-wider text-[#737373] mb-2" for="quiz-phone">Телефон или WhatsApp *</label>
+                            <input id="quiz-phone" name="phone" type="tel" required placeholder="+7 (___) ___-__-__" class="w-full bg-white border border-[#d4d4d4] px-4 py-3 text-[#171717] placeholder:text-[#a3a3a3] focus:border-[#404040] focus:outline-none font-mono text-sm">
+                        </div>
+                        <button type="submit" class="w-full wf-btn-primary py-4 font-stencil text-sm uppercase tracking-wider flex items-center justify-center gap-2">Получить расчёт + скидку 5% <span>→</span></button>
+                    </form>
+                </div>
+
+                <div class="mt-8 flex justify-between items-center gap-4">
+                    <button id="quiz-prev" class="hidden wf-btn-secondary px-6 py-3 font-stencil text-xs uppercase tracking-wider shrink-0">← Назад</button>
+                    <div class="text-center flex-1">
+                        <p class="font-mono text-[10px] text-[#a3a3a3]">🎁 БОНУС: при прохождении квиза — <span class="text-[#171717] font-bold">СКИДКА 5%</span> на любой комплект</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== FAQ ==================== -->
+    <section class="wf-section py-24">
+        <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+            <div class="mb-12 text-center">
+                <div class="font-mono text-xs text-[#737373] mb-4">// ЧАСТЫЕ ВОПРОСЫ</div>
+                <h2 class="font-stencil text-4xl sm:text-5xl uppercase text-[#171717] tracking-tight">ОТВЕЧАЕМ НА ВСЁ</h2>
+            </div>
+            <div class="space-y-3">
+                <!-- details/summary — раскрывающийся вопрос без JS -->
+                <details class="wf-card p-6 group">
+                    <summary class="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                        <span class="font-stencil text-[#171717] uppercase text-sm">Действительно ли сохранится гарантия дилера?</span>
+                        <span class="text-[#a3a3a3] group-open:rotate-180 transition">↓</span>
+                        <!-- group-open:rotate-180 — стрелка поворачивается, когда вопрос открыт -->
+                    </summary>
+                    <p class="mt-4 text-sm text-[#525252] leading-relaxed">Да. Мы крепим защиту <span class="text-[#171717]">только в штатные точки</span>, без сверления кузова. Это прописано в нашем договоре. Если дилер попытается снять вас с гарантии — наш юрист поможет составить претензию бесплатно.</p>
+                </details>
+                <details class="wf-card p-6 group">
+                    <summary class="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                        <span class="font-stencil text-[#171717] uppercase text-sm">Чем AISI 304 лучше обычной нержавейки?</span>
+                        <span class="text-[#a3a3a3] group-open:rotate-180 transition">↓</span>
+                    </summary>
+                    <p class="mt-4 text-sm text-[#525252] leading-relaxed">AISI 304 — это <span class="text-[#171717]">пищевая нержавейка</span> с содержанием никеля 8-10%. Из неё делают хирургические инструменты и посуду. Она не ржавеет 50+ лет даже в морской воде. Обычная «нержавейка» AISI 201 ржавеет через 2-3 сезона.</p>
+                </details>
+                <details class="wf-card p-6 group">
+                    <summary class="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                        <span class="font-stencil text-[#171717] uppercase text-sm">Можно установить самому по инструкции?</span>
+                        <span class="text-[#a3a3a3] group-open:rotate-180 transition">↓</span>
+                    </summary>
+                    <p class="mt-4 text-sm text-[#525252] leading-relaxed">Да. С каждым комплектом идёт <span class="text-[#171717]">видео-инструкция и PDF-мануал</span> с пошаговыми фото. Средний клиент справляется за 2-3 часа с помощником. Нужен только набор ключей и домкрат. Если что-то не получается — наш мастер поможет по видеосвязи.</p>
+                </details>
+                <details class="wf-card p-6 group">
+                    <summary class="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                        <span class="font-stencil text-[#171717] uppercase text-sm">Что если груз повредится при доставке?</span>
+                        <span class="text-[#a3a3a3] group-open:rotate-180 transition">↓</span>
+                    </summary>
+                    <p class="mt-4 text-sm text-[#525252] leading-relaxed">Каждая посылка <span class="text-[#171717]">застрахована на полную стоимость</span>. При получении проверяйте упаковку. Если есть повреждения — составляйте акт с курьером и сразу звоните нам. Мы вышлем новый комплект за свой счёт в течение 3 дней.</p>
+                </details>
+                <details class="wf-card p-6 group">
+                    <summary class="flex items-center justify-between cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                        <span class="font-stencil text-[#171717] uppercase text-sm">Можно оплатить в рассрочку?</span>
+                        <span class="text-[#a3a3a3] group-open:rotate-180 transition">↓</span>
+                    </summary>
+                    <p class="mt-4 text-sm text-[#525252] leading-relaxed">Да. Работаем с <span class="text-[#171717]">Тинькофф и Сбер</span>: рассрочка 0-0-12 (без процентов и первого взноса). Одобрение за 2 минуты по паспорту. Также принимаем оплату по счёту для юр. лиц.</p>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== КОНТАКТЫ ==================== -->
+    <section id="contacts" class="wf-section-alt py-24">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="mb-16">
+                <div class="font-mono text-xs text-[#737373] mb-4">// 07. КОНТАКТЫ</div>
+                <h2 class="font-stencil text-4xl sm:text-5xl uppercase text-[#171717] tracking-tight">ОСТАЛИСЬ ВОПРОСЫ?</h2>
+                <p class="mt-4 text-[#525252] text-lg">Свяжитесь удобным способом — ответим за 15 минут в рабочее время</p>
+            </div>
+            <div class="grid gap-12 lg:grid-cols-2 lg:gap-20">
+                <!-- Левая колонка: контакты -->
+                <div>
+                    <div class="space-y-6">
+                        <a href="tel:+78001234567" class="flex items-center gap-4 group">
+                            <div class="grid size-12 place-items-center bg-[#f5f5f5] border border-[#d4d4d4] text-[#737373]">
+                                <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                            </div>
+                            <div>
+                                <p class="font-mono text-[10px] uppercase tracking-wider text-[#a3a3a3] mb-0.5">Бесплатный звонок по РФ</p>
+                                <p id="contacts-phone" class="text-lg font-stencil text-[#171717]">8 800 123-45-67</p>
+                            </div>
+                        </a>
+                        <a href="mailto:info@bumperforce.ru" class="flex items-center gap-4 group">
+                            <div class="grid size-12 place-items-center bg-[#f5f5f5] border border-[#d4d4d4] text-[#737373]">
+                                <!-- Иконка конверта -->
+                                <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                            </div>
+                            <div>
+                                <p class="font-mono text-[10px] uppercase tracking-wider text-[#a3a3a3] mb-0.5">Email</p>
+                                <p id="contacts-email" class="text-lg font-stencil text-[#171717]">info@bumperforce.ru</p>
+                            </div>
+                        </a>
+                        <div class="flex items-center gap-4">
+                            <div class="grid size-12 place-items-center bg-[#f5f5f5] border border-[#d4d4d4] text-[#737373]">
+                                <!-- Иконка геопина -->
+                                <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                            </div>
+                            <div>
+                                <p class="font-mono text-[10px] uppercase tracking-wider text-[#a3a3a3] mb-0.5">Производство и установка</p>
+                                <p id="contacts-address" class="text-lg font-stencil text-[#171717]">Москва, ул. Промышленная, 15</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-10 pt-8 border-t border-[#e5e5e5]">
+                        <p class="font-mono text-[10px] uppercase tracking-wider text-[#a3a3a3] mb-4">Мессенджеры (отвечаем за 5 минут)</p>
+                        <div class="flex flex-wrap gap-2">
+                            <a href="https://wa.me/78001234567" class="wf-btn-secondary px-4 py-2.5 text-sm font-stencil uppercase tracking-wider">WhatsApp</a>
+                            <a href="https://t.me/username" class="wf-btn-secondary px-4 py-2.5 text-sm font-stencil uppercase tracking-wider">Telegram</a>
+                            <a href="https://vk.com/username" class="wf-btn-secondary px-4 py-2.5 text-sm font-stencil uppercase tracking-wider">ВКонтакте</a>
+                        </div>
+                    </div>
+                    <div class="mt-8 p-4 border border-[#d4d4d4] bg-[#f5f5f5]">
+                        <p class="font-mono text-xs text-[#737373]">⏰ График работы</p>
+                        <p id="contacts-hours" class="text-sm text-[#525252] mt-1">Пн–Пт: 9:00–20:00 · Сб: 10:00–18:00 · Вс: выходной</p>
+                    </div>
+                </div>
+                <!-- Правая колонка: форма обратного звонка -->
+                <div class="wf-card p-6 sm:p-8">
+                    <h3 class="font-stencil text-2xl text-[#171717] uppercase mb-6">Заказать обратный звонок</h3>
+                    <form id="callback-form" class="space-y-5">
+                        <div>
+                            <label class="block font-mono text-[10px] uppercase tracking-wider text-[#737373] mb-2" for="cb-name">Как к вам обращаться?</label>
+                            <input id="cb-name" name="name" type="text" required placeholder="Иван" class="w-full bg-white border border-[#d4d4d4] px-4 py-3 text-[#171717] placeholder:text-[#a3a3a3] focus:border-[#404040] focus:outline-none font-mono text-sm">
+                        </div>
+                        <div>
+                            <label class="block font-mono text-[10px] uppercase tracking-wider text-[#737373] mb-2" for="cb-phone">Телефон *</label>
+                            <input id="cb-phone" name="phone" type="tel" required placeholder="+7 (___) ___-__-__" class="w-full bg-white border border-[#d4d4d4] px-4 py-3 text-[#171717] placeholder:text-[#a3a3a3] focus:border-[#404040] focus:outline-none font-mono text-sm">
+                        </div>
+                        <div>
+                            <label class="block font-mono text-[10px] uppercase tracking-wider text-[#737373] mb-2" for="cb-car">Ваш автомобиль</label>
+                            <select id="cb-car" name="car" class="w-full bg-white border border-[#d4d4d4] px-4 py-3 text-[#171717] focus:border-[#404040] focus:outline-none font-mono text-sm">
+                                <option value="JAC T9">JAC T9</option>
+                                <option value="Haval H3">Haval H3</option>
+                                <option value="Tank 300">Tank 300</option>
+                                <option value="Другая">Другая модель</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full wf-btn-primary py-4 font-stencil text-sm uppercase tracking-wider flex items-center justify-center gap-2">Перезвоните мне <span>→</span></button>
+                        <p class="font-mono text-[10px] text-[#a3a3a3] text-center">Нажимая кнопку, вы соглашаетесь с <a href="#" class="underline">политикой конфиденциальности</a></p>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== ФУТЕР ==================== -->
+    <footer class="bg-white border-t border-[#d4d4d4] py-12">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="grid gap-10 py-8 sm:grid-cols-2 lg:grid-cols-4 lg:py-12">
+                <div class="lg:pr-6">
+                    <a href="#top" class="inline-flex items-center gap-3">
+                        <div class="size-10 wf-card grid place-items-center font-stencil text-lg">BF</div>
+                        <div>
+                            <div class="font-stencil text-[#171717] tracking-tight text-sm leading-none">BUMPER<span class="text-[#a3a3a3]">FORCE</span></div>
+                            <div class="font-mono text-[10px] text-[#a3a3a3] tracking-widest mt-0.5">TACTICAL OFF-ROAD PROTECTION · С 2024</div>
+                        </div>
+                    </a>
+                    <p class="mt-4 text-sm leading-relaxed text-[#525252]">Производство защитных дуг для китайских внедорожников. 427 установок в 2025 году. Гарантия 5 лет.</p>
+                </div>
+                <nav aria-label="Разделы сайта">
+                    <h2 class="font-mono text-[10px] uppercase tracking-wider text-[#737373] mb-4">Разделы</h2>
+                    <ul class="space-y-2.5">
+                        <li><a href="#problems" class="text-sm text-[#525252] hover:text-[#171717]">Проблемы</a></li>
+                        <li><a href="#products" class="text-sm text-[#525252] hover:text-[#171717]">Арсенал</a></li>
+                        <li><a href="#advantages" class="text-sm text-[#525252] hover:text-[#171717]">Преимущества</a></li>
+                        <li><a href="#guarantee" class="text-sm text-[#525252] hover:text-[#171717]">Гарантии</a></li>
+                        <li><a href="#reviews" class="text-sm text-[#525252] hover:text-[#171717]">Отзывы</a></li>
+                    </ul>
+                </nav>
+                <div>
+                    <h2 class="font-mono text-[10px] uppercase tracking-wider text-[#737373] mb-4">Контакты</h2>
+                    <ul class="space-y-2.5 text-sm text-[#525252]">
+                        <li><a href="tel:+78001234567" id="footer-phone" class="hover:text-[#171717]">8 800 123-45-67</a></li>
+                        <li><a href="mailto:info@bumperforce.ru" id="footer-email" class="hover:text-[#171717]">info@bumperforce.ru</a></li>
+                        <li id="footer-address" class="text-[#a3a3a3]">Москва, ул. Промышленная, 15</li>
+                        <li class="text-[#a3a3a3]">Пн–Сб: 9:00–20:00</li>
+                    </ul>
+                </div>
+                <div>
+                    <h2 class="font-mono text-[10px] uppercase tracking-wider text-[#737373] mb-4">Документы</h2>
+                    <ul class="space-y-2.5">
+                        <li><a href="#" class="text-sm text-[#525252] hover:text-[#171717]">Политика конфиденциальности</a></li>
+                        <li><a href="#" class="text-sm text-[#525252] hover:text-[#171717]">Публичная оферта</a></li>
+                        <li><a href="#" class="text-sm text-[#525252] hover:text-[#171717]">Реквизиты ИП</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="flex flex-col gap-4 border-t border-[#e5e5e5] py-6 sm:flex-row sm:items-center sm:justify-between">
+                <!-- СЕКРЕТНАЯ КНОПКА ВХОДА В АДМИНКУ (замаскирована под копирайт) -->
+                <button onclick="document.getElementById('admin-login').classList.remove('hidden')" class="font-mono text-[10px] uppercase tracking-wider text-[#a3a3a3] hover:text-[#171717] cursor-pointer bg-transparent border-none p-0 text-left">© 2026 BUMPERFORCE. ВСЕ ПРАВА ЗАЩИЩЕНЫ.</button>
+                <a href="#top" class="font-mono text-[10px] uppercase tracking-wider text-[#737373] hover:text-[#171717]">НАВЕРХ ↑</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==================== ОКНО ВХОДА В АДМИНКУ ==================== -->
+    <!-- hidden — скрыто; fixed inset-0 — поверх всего экрана; z-[10001] — верхний слой -->
+    <div id="admin-login" class="hidden fixed inset-0 z-[10001] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white p-8 max-w-sm w-full rounded-lg shadow-2xl relative">
+            <button onclick="document.getElementById('admin-login').classList.add('hidden')" class="absolute top-3 right-4 text-gray-400 hover:text-gray-800 text-xl">✕</button>
+            <h3 class="text-2xl font-bold text-gray-900 mb-2">Вход в систему</h3>
+            <p class="text-sm text-gray-500 mb-6">Введите пароль администратора</p>
+            <input type="password" id="admin-pass" placeholder="Пароль (1234)" class="adm-input mb-3">
+            <p id="login-err" class="hidden text-red-500 text-xs font-bold mb-3">❌ Неверный пароль!</p>
+            <button onclick="doLogin()" class="adm-btn w-full">Войти</button>
+        </div>
+    </div>
+
+    <!-- ==================== ПАНЕЛЬ АДМИНКИ ==================== -->
+    <div id="admin-panel" class="hidden fixed inset-0 z-[10000] overflow-y-auto">
+        <!-- overflow-y-auto — вертикальная прокрутка внутри панели -->
+        <header class="bg-white border-b border-gray-200 sticky top-0 z-10 px-6 py-4 flex justify-between items-center shadow-sm">
+            <h1 class="text-xl font-bold text-gray-800">🛠 Панель управления BumperForce</h1>
+            <button onclick="doLogout()" class="adm-btn adm-btn-gray">Выйти и обновить сайт</button>
+        </header>
+        <!-- Вкладки -->
+        <div class="bg-white border-b border-gray-200 px-6 flex space-x-2 overflow-x-auto">
+            <div class="adm-tab active" onclick="switchTab('products', this)">🛒 Товары</div>
+            <div class="adm-tab" onclick="switchTab('content', this)">📝 Контент и отзывы</div>
+            <div class="adm-tab" onclick="switchTab('settings', this)">⚙️ Настройки</div>
+        </div>
+        <div class="max-w-5xl mx-auto p-6 pb-24">
+            <!-- Вкладка ТОВАРЫ -->
+            <div id="tab-products" class="adm-tab-content">
+                <div class="adm-card">
+                    <h2 class="text-lg font-bold mb-4">Управление каталогом</h2>
+                    <div id="adm-products-list" class="space-y-4"></div>
+                </div>
+            </div>
+            <!-- Вкладка КОНТЕНТ -->
+            <div id="tab-content" class="adm-tab-content hidden">
+                <div class="adm-card">
+                    <h2 class="text-lg font-bold mb-4">Преимущества (6 карточек)</h2>
+                    <div id="adm-advantages-list" class="space-y-3"></div>
+                    <button onclick="saveAdvantages()" class="adm-btn adm-btn-green mt-4">💾 Сохранить преимущества</button>
+                </div>
+                <div class="adm-card">
+                    <h2 class="text-lg font-bold mb-4">Отзывы (модерация)</h2>
+                    <div id="adm-reviews-list" class="space-y-3"></div>
+                    <h3 class="font-bold mt-6 mb-2">➕ Добавить отзыв</h3>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap">
+                        <input id="rv-author" class="adm-input" style="flex:1;min-width:140px" placeholder="Автор">
+                        <input id="rv-meta" class="adm-input" style="flex:1;min-width:140px" placeholder="Город · Авто">
+                        <select id="rv-rating" class="adm-input" style="width:90px"><option>5</option><option>4</option><option>3</option></select>
+                    </div>
+                    <textarea id="rv-text" class="adm-input" rows="2" placeholder="Текст отзыва"></textarea>
+                    <button onclick="addReview()" class="adm-btn mt-2">Опубликовать</button>
+                </div>
+            </div>
+            <!-- Вкладка НАСТРОЙКИ -->
+            <div id="tab-settings" class="adm-tab-content hidden">
+                <div class="adm-card">
+                    <h2 class="text-lg font-bold mb-4">Общие настройки сайта</h2>
+                    <label class="adm-label">Текст акции (промо-баннер)</label>
+                    <input type="text" id="adm-promo-text" class="adm-input">
+                    <div class="flex items-center gap-2 mt-3">
+                        <input type="checkbox" id="adm-promo-active" style="width:18px;height:18px">
+                        <label for="adm-promo-active" class="text-sm text-gray-700">Показывать баннер акции на сайте</label>
+                    </div>
+                    <label class="adm-label mt-4">Телефон (текст)</label>
+                    <input type="text" id="adm-phone" class="adm-input">
+                    <label class="adm-label mt-3">Email</label>
+                    <input type="text" id="adm-email" class="adm-input">
+                    <label class="adm-label mt-3">Адрес</label>
+                    <input type="text" id="adm-address" class="adm-input">
+                    <label class="adm-label mt-3">График работы</label>
+                    <input type="text" id="adm-hours" class="adm-input">
+                    <button onclick="saveSettings()" class="adm-btn adm-btn-green mt-4">💾 Сохранить настройки</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== JAVASCRIPT ==================== -->
+    <script>
+    // ========== СПЕЦ. ВОЗМОЖНОСТИ ==========
+    let currentFontSize = 0;              // let — переменная; текущий уровень размера (0/1/2)
+    const fontSizeSteps = [16, 20, 24];   // const — константа; массив размеров шрифта (px)
+
+    function applyFontSize() {            // применить размер ко всей странице
+        const size = fontSizeSteps[currentFontSize];
+        document.documentElement.style.fontSize = size + 'px';
+        // document.documentElement — это <html>; меняем базовый размер — масштабируется весь сайт
+        const ind = document.getElementById('font-size-indicator');
+        if (ind) {
+            ind.textContent = 'Размер: ' + size + 'px (' + Math.round(size / 16 * 100) + '%)';
+            ind.style.color = size > 16 ? '#404040' : '#737373';
+        }
+        updateAccessibilityButtons();
+    }
+    function changeFontSize(d) {          // d = +1 (увеличить) или -1 (уменьшить)
+        currentFontSize = Math.min(2, Math.max(0, currentFontSize + d));
+        // Math.max/min — ограничиваем диапазон 0..2
+        applyFontSize();
+    }
+    function resetFontSize() { currentFontSize = 0; applyFontSize(); }   // сброс
+    function toggleHighContrast() {       // переключить режим высокой контрастности
+        document.body.classList.toggle('high-contrast');
+        updateAccessibilityButtons();
+    }
+    function updateAccessibilityButtons() {
+        const b = document.querySelectorAll('.accessibility-btn');
+        // querySelectorAll — найти все элементы с этим классом
+        b.forEach(x => x.classList.remove('active'));
+        if (currentFontSize > 0) b[0].classList.add('active');
+        if (document.body.classList.contains('high-contrast')) b[3].classList.add('active');
+    }
+
+    // ========== БАЗА ДАННЫХ (localStorage — память браузера) ==========
+    const defaultData = {
+        settings: {
+            promoText: '⚠ ДО 30 НОЯБРЯ · УСТАНОВКА В ПОДАРОК',
+            promoActive: true,
+            phone: '8 800 123-45-67',
+            phoneHref: '+78001234567',
+            email: 'info@bumperforce.ru',
+            address: 'Москва, ул. Промышленная, 15',
+            hours: 'Пн–Пт: 9:00–20:00 · Сб: 10:00–18:00 · Вс: выходной'
+        },
+        products: [
+            { id: 1, title: 'JAC T9', sub: 'Пикап · 2024+', price: 42900, oldPrice: null, stockBadge: 'В наличии · 12 шт', ribbon: '', accent: false, active: true, features: ['Передний + задний бампер', 'Зеркальная полировка AISI 304', 'Установка за 3 часа', 'Гарантия дилера сохранена'] },
+            { id: 2, title: 'Haval H3', sub: 'Внедорожник · 2024+', price: 39900, oldPrice: 48900, stockBadge: 'В наличии · 8 шт', ribbon: 'Хит продаж', accent: true, active: true, features: ['Передний + задний бампер', 'Чёрный металл + порошковое покрытие', 'Установка за 3 часа', 'Гарантия дилера сохранена'] },
+            { id: 3, title: 'Tank 300', sub: 'Внедорожник · 2023+', price: 54900, oldPrice: null, stockBadge: 'Осталось 3 шт', ribbon: '', accent: false, active: true, features: ['Передний + задний бампер', 'Зеркальная полировка AISI 304', 'Усиленный крепёж', 'Гарантия дилера сохранена'] }
+        ],
+        advantages: [
+            { tag: '01 / МАТЕРИАЛ', title: 'Сталь AISI 304 · 3 мм', text: 'Пищевая нержавейка, которая не ржавеет 50+ лет. Из неё делают хирургические инструменты и посуду.' },
+            { tag: '02 / МОНТАЖ', title: '0 отверстий в кузове', text: 'Крепим только в штатные точки. Дилер не снимет вас с гарантии — мы даём это в договоре.' },
+            { tag: '03 / КОНТРОЛЬ', title: 'Каждый шов под рентгеном', text: 'Сварные соединения проверяются дефектоскопом. Никаких скрытых пор и непроваров.' },
+            { tag: '04 / СРОКИ', title: '3 часа установка', text: 'Утром привезли машину — вечером забираете готовую. Не оставляем авто на ночь.' },
+            { tag: '05 / ЛОГИСТИКА', title: 'СДЭК, ПЭК, Деловые Линии', text: 'Доставка 3–7 дней по всей РФ. Жёсткая упаковка: фанера + вспененный полиэтилен. Без царапин.' },
+            { tag: '06 / СПЕЦИАЛИЗАЦИЯ', title: 'Только китайские авто', text: 'Мы знаем каждую точку крепления на JAC, Haval, Tank, GAC. Универсальный колхоз — не к нам.' }
+        ],
+        reviews: [
+            { id: 1, author: 'Алексей К.', meta: 'Иркутск · Haval H3 · Пакет 02', rating: 5, text: 'Поставил на Haval H3. Проехал 15 000 км по тайге — ни одной царапины на бампере. Ветки, камни, бордюры — всё держит. Дилер при ТО даже не заметил, что защита нештатная.', active: true },
+            { id: 2, author: 'Дмитрий М.', meta: 'Краснодар · Tank 300 · Пакет 03', rating: 5, text: 'Заказывал индивидуальный комплект под Tank 300. Ребята сделали 3D-модель за день, согласовали каждый миллиметр. Качество стали — как у швейцарских часов. Через год — ни следа коррозии.', active: true },
+            { id: 3, author: 'Сергей В.', meta: 'Краснодар · JAC T9 · Пакет 01', rating: 5, text: 'Отправили в Краснодар за 4 дня. Упаковано на совесть: фанерный ящик + 3 слоя вспененного полиэтилена. Ни одной царапины. Сам установил за 2 часа по видео-инструкции.', active: true }
+        ]
+    };
+
+    function getDB() {
+        const s = localStorage.getItem('bumperforce_db_v6');
+        // localStorage.getItem — прочитать из памяти браузера
+        return s ? JSON.parse(s) : JSON.parse(JSON.stringify(defaultData));
+        // JSON.parse — строку в объект; JSON.stringify — объект в строку (копия)
+    }
+    function saveDB(db) { localStorage.setItem('bumperforce_db_v6', JSON.stringify(db)); }
+
+    // ========== ШАБЛОНЫ КАРТОЧЕК (серые, со всеми компонентами) ==========
+    function productCard(p) {
+        // Собираем карточку товара по частям (конкатенация строк через +)
+        let ribbon = '';
+        if (p.ribbon) {
+            ribbon = '<div class="absolute top-0 right-0 z-10 bg-[#737373] text-white font-stencil text-[10px] px-3 py-1 uppercase">' + p.ribbon + '</div>';
+        }
+        let badge = '';
+        if (p.stockBadge) {
+            badge = '<div class="absolute top-4 left-4 bg-[#e5e5e5] border border-[#a3a3a3] text-[#525252] px-3 py-1 font-stencil text-[10px] uppercase">' + p.stockBadge + '</div>';
+        }
+        let oldPrice = '';
+        if (p.oldPrice) {
+            oldPrice = '<div class="text-xs text-[#a3a3a3] line-through">' + p.oldPrice.toLocaleString('ru-RU') + ' ₽</div>';
+        }
+        // line-through — зачёркнутый текст
+        let features = '';
+        p.features.forEach(function (f) {
+            features += '<li class="flex items-start gap-2"><span class="text-[#737373] shrink-0">✓</span>' + f + '</li>';
+        });
+        const accent = p.accent ? ' border-2 border-[#737373]' : '';
+        return '' +
+        '<article class="wf-card relative' + accent + '">' +
+            ribbon +
+            '<div class="aspect-[4/3] w-full placeholder relative">' +
+                '<svg class="size-16 mb-3" style="color:#a3a3a3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M5 17h14M5 17a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1l2-3h8l2 3h1a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2M5 17a2 2 0 1 0 4 0M19 17a2 2 0 1 1-4 0"/></svg>' +
+                '<span>[ ФОТО: ' + p.title + ' С ЗАЩИТОЙ ]</span>' +
+                badge +
+            '</div>' +
+            '<div class="p-6 sm:p-8">' +
+                '<div class="flex items-start justify-between gap-4 mb-4">' +
+                    '<div>' +
+                        '<p class="font-mono text-[10px] uppercase tracking-wider text-[#a3a3a3] mb-1">' + p.sub + '</p>' +
+                        '<h3 class="font-stencil text-2xl text-[#171717] uppercase">' + p.title + '</h3>' +
+                    '</div>' +
+                    '<div class="text-right">' + oldPrice +
+                        '<div class="font-stencil text-2xl text-[#171717]">от ' + p.price.toLocaleString('ru-RU') + ' ₽</div>' +
+                    '</div>' +
+                '</div>' +
+                '<ul class="space-y-2 mb-6 font-mono text-xs text-[#525252]">' + features + '</ul>' +
+                '<a href="#quiz" class="block w-full wf-btn-primary text-center py-3 font-stencil text-xs uppercase tracking-wider">Рассчитать под мой ' + p.title + '</a>' +
+            '</div>' +
+        '</article>';
+    }
+
+    function advantageCard(a) {
+        // Карточка преимущества: тег + заголовок + текст
+        return '' +
+        '<div class="wf-card p-6">' +
+            '<div class="font-mono text-[10px] text-[#737373] mb-4">' + a.tag + '</div>' +
+            '<h3 class="font-stencil text-xl text-[#171717] uppercase mb-3">' + a.title + '</h3>' +
+            '<p class="text-sm text-[#525252]">' + a.text + '</p>' +
+        '</div>';
+    }
+
+    function reviewCard(r) {
+        // Карточка отзыва: звёзды + текст + заглушка фото + аватар с инициалами
+        const stars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+        // repeat(n) — повторить символ n раз
+        const parts = r.meta.split('·');
+        const photoLabel = parts[1] ? parts[1].trim() : 'авто клиента';
+        const initials = r.author.split(' ').map(function (w) { return w[0]; }).join('').slice(0, 2);
+        // slice(0,2) — взять первые 2 символа (инициалы)
+        return '' +
+        '<div class="wf-card p-6">' +
+            '<div class="flex items-center gap-1 mb-4 text-[#737373] text-lg">' + stars + '</div>' +
+            '<p class="text-sm text-[#525252] leading-relaxed mb-6">«' + r.text + '»</p>' +
+            '<div class="aspect-video placeholder mb-6 border-2 border-dashed border-[#a3a3a3]" style="background:#eeeeee">[ ФОТО: ' + photoLabel + ' ]</div>' +
+            '<div class="flex items-center gap-4 pt-4 border-t border-[#e5e5e5]">' +
+                '<div class="size-10 bg-[#e5e5e5] border border-[#a3a3a3] grid place-items-center font-stencil text-[#525252]">' + initials + '</div>' +
+                '<div>' +
+                    '<div class="font-stencil text-[#171717] text-sm">' + r.author + '</div>' +
+                    '<div class="font-mono text-[10px] text-[#a3a3a3]">' + r.meta + '</div>' +
+                '</div>' +
+            '</div>' +
+        '</div>';
+    }
+
+    // ========== ОТРИСОВКА ЛЕНДИНГА ==========
+    function renderLanding() {
+        const db = getDB();
+        const s = db.settings;
+
+        // Настройки: баннер, телефоны, контакты
+        const banner = document.getElementById('promo-banner');
+        banner.style.display = s.promoActive ? 'inline-flex' : 'none';
+        document.getElementById('promo-text').textContent = s.promoText;
+        document.querySelectorAll('a[href^="tel:"]').forEach(function (a) { a.href = 'tel:' + s.phoneHref; });
+        // a[href^="tel:"] — все ссылки, начинающиеся с tel:
+        document.getElementById('header-phone-text').textContent = s.phone;
+        document.getElementById('contacts-phone').textContent = s.phone;
+        document.getElementById('footer-phone').textContent = s.phone;
+        document.getElementById('contacts-email').textContent = s.email;
+        document.getElementById('footer-email').textContent = s.email;
+        document.getElementById('contacts-address').textContent = s.address;
+        document.getElementById('footer-address').textContent = s.address;
+        document.getElementById('contacts-hours').textContent = s.hours;
+
+        // Товары: только активные
+        let productsHtml = '';
+        db.products.forEach(function (p) { if (p.active) productsHtml += productCard(p); });
+        document.getElementById('products-grid').innerHTML = productsHtml;
+
+        // Преимущества
+        let advHtml = '';
+        db.advantages.forEach(function (a) { advHtml += advantageCard(a); });
+        document.getElementById('advantages-grid').innerHTML = advHtml;
+
+        // Отзывы: только видимые
+        let revHtml = '';
+        db.reviews.forEach(function (r) { if (r.active) revHtml += reviewCard(r); });
+        document.getElementById('reviews-grid').innerHTML = revHtml;
+    }
+
+    // ========== ФОРМЫ → ПИСЬМО МЕНЕДЖЕРУ ==========
+    // В боевой версии здесь будет fetch на api.php, а PHP mail() отправит письмо.
+    function attachForm(formId) {
+        const form = document.getElementById(formId);
+        if (!form) return;
+        form.addEventListener('submit', function (e) {
+            e.preventDefault(); // отменить перезагрузку страницы
+            const btn = form.querySelector('button[type="submit"]');
+            const old = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = 'ОТПРАВЛЯЕМ ПИСЬМО...';
+            setTimeout(function () {
+                btn.innerHTML = '✅ ОТПРАВЛЕНО МЕНЕДЖЕРУ';
+                form.reset();
+                if (formId === 'quiz-form' && typeof goToStep === 'function') {
+                    goToStep(1);
+                    document.querySelectorAll('.quiz-option').forEach(function (b) { b.classList.remove('selected'); });
+                }
+                setTimeout(function () { btn.disabled = false; btn.innerHTML = old; }, 3500);
+            }, 900);
+        });
+    }
+
+    // ========== КВИЗ ==========
+    let currentStep = 1;
+    const totalSteps = 4;
+    const quizData = {};
+
+    document.querySelectorAll('.quiz-option').forEach(function (button) {
+        button.addEventListener('click', function () {
+            const step = parseInt(this.dataset.step);
+            quizData['step' + step] = this.dataset.value;
+            document.querySelectorAll('[data-step="' + step + '"]').forEach(function (b) { b.classList.remove('selected'); });
+            this.classList.add('selected');
+            setTimeout(function () { if (step < totalSteps) goToStep(step + 1); }, 300);
+        });
+    });
+    document.getElementById('quiz-prev').addEventListener('click', function () {
+        if (currentStep > 1) goToStep(currentStep - 1);
+    });
+    function goToStep(step) {
+        document.getElementById('step-' + currentStep).classList.remove('active');
+        document.getElementById('step-' + step).classList.add('active');
+        for (let i = 1; i <= totalSteps; i++) {
+            const bar = document.getElementById('progress-' + i);
+            bar.classList.toggle('bg-[#737373]', i <= step);
+            bar.classList.toggle('bg-[#e5e5e5]', i > step);
+        }
+        document.getElementById('quiz-step').textContent = step;
+        document.getElementById('quiz-prev').classList.toggle('hidden', step === 1);
+        currentStep = step;
+    }
+
+    // ========== АДМИНКА ==========
+    function doLogin() {
+        if (document.getElementById('admin-pass').value === '1234') {
+            localStorage.setItem('bf_admin_auth', 'true');
+            document.getElementById('admin-login').classList.add('hidden');
+            openAdmin();
+        } else {
+            document.getElementById('login-err').classList.remove('hidden');
+        }
+    }
+    function doLogout() {
+        localStorage.removeItem('bf_admin_auth');
+        document.getElementById('admin-panel').classList.add('hidden');
+        location.reload(); // перезагрузка применяет изменения к лендингу
+    }
+    function openAdmin() {
+        document.getElementById('admin-panel').classList.remove('hidden');
+        renderAdminUI();
+    }
+    function switchTab(id, el) {
+        document.querySelectorAll('.adm-tab-content').forEach(function (c) { c.classList.add('hidden'); });
+        document.getElementById('tab-' + id).classList.remove('hidden');
+        document.querySelectorAll('.adm-tab').forEach(function (t) { t.classList.remove('active'); });
+        el.classList.add('active');
+    }
+
+    function renderAdminUI() {
+        const db = getDB();
+
+        // Заполняем настройки
+        document.getElementById('adm-promo-text').value = db.settings.promoText;
+        document.getElementById('adm-promo-active').checked = db.settings.promoActive;
+        document.getElementById('adm-phone').value = db.settings.phone;
+        document.getElementById('adm-email').value = db.settings.email;
+        document.getElementById('adm-address').value = db.settings.address;
+        document.getElementById('adm-hours').value = db.settings.hours;
+
+        // Редактор товаров
+        let html = '';
+        db.products.forEach(function (p) {
+            html += '<div style="border:1px solid #e5e7eb;border-radius:8px;padding:14px;background:#f9fafb">' +
+                '<div style="display:flex;justify-content:space-between;align-items:center"><b>' + p.title + '</b>' +
+                '<label style="font-size:12px;display:flex;gap:6px;align-items:center"><input type="checkbox" id="ap-active-' + p.id + '" ' + (p.active ? 'checked' : '') + ' style="width:16px;height:16px"> показывать на сайте</label></div>' +
+                '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">' +
+                    '<div style="flex:2;min-width:120px"><span class="adm-label">Название</span><input class="adm-input" id="ap-title-' + p.id + '" value="' + p.title + '"></div>' +
+                    '<div style="flex:2;min-width:140px"><span class="adm-label">Подзаголовок</span><input class="adm-input" id="ap-sub-' + p.id + '" value="' + p.sub + '"></div>' +
+                    '<div style="flex:1;min-width:100px"><span class="adm-label">Цена, ₽</span><input class="adm-input" type="number" id="ap-price-' + p.id + '" value="' + p.price + '"></div>' +
+                    '<div style="flex:1;min-width:100px"><span class="adm-label">Старая цена</span><input class="adm-input" type="number" id="ap-old-' + p.id + '" value="' + (p.oldPrice || '') + '"></div>' +
+                '</div>' +
+                '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">' +
+                    '<div style="flex:2;min-width:150px"><span class="adm-label">Плашка наличия</span><input class="adm-input" id="ap-badge-' + p.id + '" value="' + p.stockBadge + '"></div>' +
+                    '<div style="flex:2;min-width:150px"><span class="adm-label">Лента (например «Хит продаж»)</span><input class="adm-input" id="ap-ribbon-' + p.id + '" value="' + p.ribbon + '"></div>' +
+                '</div>' +
+                '<span class="adm-label">Галочки-преимущества (каждая с новой строки)</span>' +
+                '<textarea class="adm-input" id="ap-feat-' + p.id + '" rows="3">' + p.features.join('\n') + '</textarea>' +
+                '<div style="margin-top:8px;display:flex;gap:8px">' +
+                    '<button class="adm-btn adm-btn-green" onclick="saveProduct(' + p.id + ')">💾 Сохранить</button>' +
+                    '<button class="adm-btn adm-btn-red" onclick="deleteProduct(' + p.id + ')">🗑 Удалить</button>' +
+                '</div></div>';
+        });
+        html += '<div style="border:1px dashed #9ca3af;border-radius:8px;padding:14px"><b>➕ Новый товар</b>' +
+            '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">' +
+            '<input class="adm-input" id="np-title" style="flex:2;min-width:140px" placeholder="Название (GAC GS8)">' +
+            '<input class="adm-input" id="np-price" style="flex:1;min-width:100px" type="number" placeholder="Цена ₽"></div>' +
+            '<button class="adm-btn" style="margin-top:8px" onclick="addProduct()">Создать товар</button></div>';
+        document.getElementById('adm-products-list').innerHTML = html;
+
+        // Редактор преимуществ
+        let advHtml = '';
+        db.advantages.forEach(function (a, i) {
+            advHtml += '<div style="border:1px solid #e5e7eb;border-radius:8px;padding:10px;background:#f9fafb">' +
+                '<input class="adm-input" id="aa-title-' + i + '" value="' + a.title + '" style="font-weight:700">' +
+                '<textarea class="adm-input" id="aa-text-' + i + '" rows="2">' + a.text + '</textarea></div>';
+        });
+        document.getElementById('adm-advantages-list').innerHTML = advHtml;
+
+        // Отзывы
+        let revHtml = '';
+        db.reviews.forEach(function (r) {
+            revHtml += '<div style="border:1px solid #e5e7eb;border-radius:8px;padding:10px;background:#f9fafb;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap">' +
+                '<div style="flex:1;min-width:200px"><b>' + r.author + '</b> <small style="color:#6b7280">' + r.meta + '</small>' +
+                '<p style="font-size:13px;color:#374151;margin:4px 0 0">«' + r.text + '»</p></div>' +
+                '<div style="display:flex;flex-direction:column;gap:6px">' +
+                '<span style="font-size:12px;' + (r.active ? 'color:#16a34a' : 'color:#9ca3af') + '">' + (r.active ? '🟢 виден на сайте' : '⚪ скрыт') + '</span>' +
+                '<button class="adm-btn adm-btn-gray" style="padding:4px 10px;font-size:12px" onclick="toggleReview(' + r.id + ')">' + (r.active ? 'Скрыть' : 'Показать') + '</button>' +
+                '<button class="adm-btn adm-btn-red" style="padding:4px 10px;font-size:12px" onclick="deleteReview(' + r.id + ')">Удалить</button>' +
+                '</div></div>';
+        });
+        document.getElementById('adm-reviews-list').innerHTML = revHtml;
+    }
+
+    function saveProduct(id) {
+        const db = getDB();
+        const p = db.products.find(function (x) { return x.id === id; });
+        if (!p) return;
+        p.title = document.getElementById('ap-title-' + id).value;
+        p.sub = document.getElementById('ap-sub-' + id).value;
+        p.price = Number(document.getElementById('ap-price-' + id).value) || 0;
+        const old = document.getElementById('ap-old-' + id).value;
+        p.oldPrice = old ? Number(old) : null;
+        p.stockBadge = document.getElementById('ap-badge-' + id).value;
+        p.ribbon = document.getElementById('ap-ribbon-' + id).value;
+        p.features = document.getElementById('ap-feat-' + id).value.split('\n').filter(function (x) { return x.trim(); });
+        p.active = document.getElementById('ap-active-' + id).checked;
+        saveDB(db);
+        alert('✅ Товар сохранён!');
+    }
+    function addProduct() {
+        const title = document.getElementById('np-title').value;
+        const price = Number(document.getElementById('np-price').value);
+        if (!title || !price) { alert('Заполните название и цену'); return; }
+        const db = getDB();
+        db.products.push({ id: Date.now(), title: title, sub: 'Внедорожник · 2024+', price: price, oldPrice: null, stockBadge: 'В наличии', ribbon: '', accent: false, active: true, features: ['Передний + задний бампер', 'Установка без сверления'] });
+        saveDB(db);
+        renderAdminUI();
+    }
+    function deleteProduct(id) {
+        if (!confirm('Удалить товар?')) return;
+        const db = getDB();
+        db.products = db.products.filter(function (p) { return p.id !== id; });
+        saveDB(db);
+        renderAdminUI();
+    }
+    function saveAdvantages() {
+        const db = getDB();
+        db.advantages.forEach(function (a, i) {
+            a.title = document.getElementById('aa-title-' + i).value;
+            a.text = document.getElementById('aa-text-' + i).value;
+        });
+        saveDB(db);
+        alert('✅ Преимущества сохранены!');
+    }
+    function toggleReview(id) {
+        const db = getDB();
+        const r = db.reviews.find(function (x) { return x.id === id; });
+        if (r) { r.active = !r.active; saveDB(db); renderAdminUI(); }
+    }
+    function deleteReview(id) {
+        if (!confirm('Удалить отзыв?')) return;
+        const db = getDB();
+        db.reviews = db.reviews.filter(function (r) { return r.id !== id; });
+        saveDB(db);
+        renderAdminUI();
+    }
+    function addReview() {
+        const author = document.getElementById('rv-author').value;
+        const text = document.getElementById('rv-text').value;
+        if (!author || !text) { alert('Заполните автора и текст'); return; }
+        const db = getDB();
+        db.reviews.push({ id: Date.now(), author: author, meta: document.getElementById('rv-meta').value, rating: Number(document.getElementById('rv-rating').value), text: text, active: true });
+        saveDB(db);
+        document.getElementById('rv-author').value = '';
+        document.getElementById('rv-text').value = '';
+        renderAdminUI();
+    }
+    function saveSettings() {
+        const db = getDB();
+        db.settings.promoText = document.getElementById('adm-promo-text').value;
+        db.settings.promoActive = document.getElementById('adm-promo-active').checked;
+        db.settings.phone = document.getElementById('adm-phone').value;
+        db.settings.phoneHref = db.settings.phone.replace(/\D/g, '');
+        // replace(/\D/g,'') — убрать всё, кроме цифр (\D — не цифра, g — все вхождения)
+        db.settings.email = document.getElementById('adm-email').value;
+        db.settings.address = document.getElementById('adm-address').value;
+        db.settings.hours = document.getElementById('adm-hours').value;
+        saveDB(db);
+        alert('✅ Настройки сохранены!');
+    }
+
+    // ========== СТАРТ ==========
+    window.addEventListener('DOMContentLoaded', function () {
+        // DOMContentLoaded — страница полностью загружена
+        renderLanding();
+        attachForm('quiz-form');
+        attachForm('callback-form');
+        applyFontSize();
+        if (localStorage.getItem('bf_admin_auth') === 'true') openAdmin();
+        document.getElementById('admin-pass').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') doLogin();
+        });
+
+        // Плавное появление секций при прокрутке
+        const observer = new IntersectionObserver(function (entries) {
+            entries.forEach(function (en) {
+                if (en.isIntersecting) {
+                    en.target.style.opacity = '1';
+                    en.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.05 });
+        document.querySelectorAll('section').forEach(function (sec) {
+            sec.style.opacity = '0';
+            sec.style.transform = 'translateY(20px)';
+            sec.style.transition = 'opacity .6s ease, transform .6s ease';
+            observer.observe(sec);
+        });
+    });
+    </script>
+</body>
+</html>
